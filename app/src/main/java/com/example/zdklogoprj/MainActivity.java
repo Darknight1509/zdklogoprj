@@ -3,6 +3,7 @@ package com.example.zdklogoprj;
 import static android.os.Environment.DIRECTORY_DCIM;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -28,6 +29,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.zdklogoprj.databinding.ActivityMainBinding;
 
@@ -43,6 +46,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.List;
 
 import kotlin.Metadata;
 
@@ -51,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
     private static final int PICK_IMAGE_REQUEST = 1; // 请求码
+
+    private int selectedImageResId = -1; // 默认值为-1，表示没有选中任何图片
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +73,26 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, PICK_IMAGE_REQUEST);
             }
         });
+
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 1)); // 每行1个元素
+
+        List<Integer> imageResIds = Arrays.asList(
+                R.drawable.applelogo, R.drawable.canonlogo, R.drawable.cpslogo,
+                R.drawable.leicalogo, R.drawable.longlogo, R.drawable.nikonlogo,
+                R.drawable.sonylogo, R.drawable.topofbeijinglogo, R.drawable.zdkoldlogoblack);
+        ImageOptionAdapter adapter = new ImageOptionAdapter(this, imageResIds, new ImageOptionAdapter.OnImageSelectedListener() {
+            @Override
+            public void onImageSelected(int imageResId) {
+                selectedImageResId = imageResId; // 更新Activity或Fragment中的变量
+            }
+        });
+
+
+        selectedImageResId = adapter.getSelectedImageResId();
+
+        recyclerView.setAdapter(adapter);
+
     }
 
     @Override
@@ -75,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
             Uri selectedImageUri = data.getData();
 
 
-                // 获取到图片的InputStream，然后将其转换为Bitmap
+            // 获取到图片的InputStream，然后将其转换为Bitmap
             InputStream imageStream = null;
             try {
 
@@ -96,8 +123,66 @@ public class MainActivity extends AppCompatActivity {
             Bitmap result = Bitmap.createBitmap(src.getWidth(), src.getHeight(), src.getConfig());
 
             InputStream is = null;
+
+                Paint paint = new Paint();
+
+                paint.setTextSize(62); // 水印的字体大小
+                paint.setAntiAlias(true);
+                paint.setTypeface(Typeface.DEFAULT_BOLD); // 设置文字样式
+                paint.setColor(Color.BLACK); // 水印的颜色
+
             try {
-                is = getAssets().open("longlogo01-android.jpg");
+
+                switch (selectedImageResId){
+
+                    case 0:
+                    is = getAssets().open("applelogo.png");
+                        paint.setColor(Color.BLACK); // 水印的颜色
+                        break;
+                    case 1:
+                        is = getAssets().open("canonlogo.png");
+                        paint.setColor(Color.BLACK); // 水印的颜色
+                        break;
+
+                    case 2:
+                        is = getAssets().open("cpslogo.png");
+                        paint.setColor(Color.BLACK); // 水印的颜色
+                        break;
+
+                    case 3:
+                        is = getAssets().open("leicalogo.png");
+                        paint.setColor(Color.BLACK); // 水印的颜色
+                        break;
+
+                    case 4:
+                        is = getAssets().open("longlogo.jpg");
+                        paint.setColor(Color.YELLOW); // 水印的颜色
+                        break;
+
+                    case 5:
+                        is = getAssets().open("nikonlogo.png");
+                        paint.setColor(Color.BLACK); // 水印的颜色
+                        break;
+
+                    case 6:
+                        is = getAssets().open("sonylogo.png");
+                        paint.setColor(Color.BLACK); // 水印的颜色
+                        break;
+                    case 7:
+                        is = getAssets().open("topofbeijinglogo.png");
+                        paint.setColor(Color.BLACK); // 水印的颜色
+                        break;
+                    case 8:
+                        is = getAssets().open("zdkoldlogoblack.jpg");
+                        paint.setColor(Color.WHITE); // 水印的颜色
+                        break;
+                    default:
+                        is = getAssets().open("longlogo.jpg");
+                        paint.setColor(Color.YELLOW); // 水印的颜色
+                        break;
+                }
+
+
             Bitmap bitmap = BitmapFactory.decodeStream(is);
 
             Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
@@ -155,13 +240,9 @@ public class MainActivity extends AppCompatActivity {
                 sfocalLengthResult = focalLength35mm;
             }
 
-            String exposure = sfocalLengthResult + "mm f/" + fNumber + " " + realExposure + "S ISO"+ isoSpeedRatings;
+            String exposure = sfocalLengthResult + "mm f/" + fNumber + " " + realExposure + "s ISO"+ isoSpeedRatings;
 
-            Paint paint = new Paint();
-            paint.setColor(Color.YELLOW); // 水印的颜色
-            paint.setTextSize(62); // 水印的字体大小
-            paint.setAntiAlias(true);
-            paint.setTypeface(Typeface.DEFAULT_BOLD); // 设置文字样式
+
 
             Canvas logoCanvas = new Canvas(mutableBitmap);
             if(model != null) {
@@ -172,10 +253,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if(exposure != null) {
-                logoCanvas.drawText(exposure, 3000, 155, paint);
+                logoCanvas.drawText(exposure, 3085, 155, paint);
             }
             if(dateTime != null) {
-                logoCanvas.drawText(dateTime, 3000, 250, paint);
+                logoCanvas.drawText(dateTime, 3085, 250, paint);
             }
 
             Bitmap topBitmap = result;
@@ -210,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
+            //todo 展示形式修改
             imageView.setImageBitmap(newresult);
 
             OutputStream os = null;
