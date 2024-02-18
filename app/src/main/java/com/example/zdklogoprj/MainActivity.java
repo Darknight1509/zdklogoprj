@@ -200,6 +200,10 @@ public class MainActivity extends AppCompatActivity {
 
             String dateTime = exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL);
 
+            String[] timeparts = dateTime.split(" ", 2);
+            String datePart = timeparts[0].replace(':', '.');
+            dateTime = datePart + " " + timeparts[1];
+
             String focalLength = exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH);
 
             String focalLength35mm = exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH_IN_35MM_FILM);
@@ -298,7 +302,8 @@ public class MainActivity extends AppCompatActivity {
             try {
                 // 保存图片到Pictures目录
                 File directory = Environment.getExternalStoragePublicDirectory(DIRECTORY_DCIM);
-                String filename = getFileName(selectedImageUri)+"_01.jpg";
+                String originFileName =getFileName(selectedImageUri);
+                String filename = originFileName.substring(0,originFileName.length()-4)+"_logo.jpg";
                 File file = new File(directory, filename);
 
                 os = new FileOutputStream(file);
@@ -306,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
                 os.flush();
                 os.close();
                 MediaScannerConnection.scanFile(this, new String[]{file.toString()}, null, null);
-                Toast.makeText(this, "图片已保存到" + directory, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "加水印图片已保存到" + directory, Toast.LENGTH_LONG).show();
 
             } catch (Exception e) {
                 e.printStackTrace();
