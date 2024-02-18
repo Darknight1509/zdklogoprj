@@ -291,8 +291,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-            //todo 展示形式修改
-            imageView.setImageBitmap(newresult);
+//            //todo 展示形式修改
+//            imageView.setImageBitmap(newresult);
 
             OutputStream os = null;
             try {
