@@ -204,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
             imageView.setImageBitmap(newresult);
 
             OutputStream os = null;
