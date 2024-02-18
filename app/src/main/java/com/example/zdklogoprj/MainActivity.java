@@ -107,6 +107,12 @@ public class MainActivity extends AppCompatActivity {
 
             String lensModel = exif.getAttribute(ExifInterface.TAG_LENS_MODEL);
 
+            String make =  exif.getAttribute(ExifInterface.TAG_MAKE);
+
+            if(lensModel == null){
+                lensModel = make;
+            }
+
             String dateTime = exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL);
 
             String focalLength = exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH);
