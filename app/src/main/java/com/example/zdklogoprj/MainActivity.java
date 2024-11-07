@@ -48,6 +48,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import kotlin.Metadata;
 
@@ -93,6 +95,25 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(adapter);
 
+    }
+
+
+    public static String replaceMarkII(String input) {
+        // 匹配格式 R5m2、R6m2 等，"R" 后跟数字，然后 "m2"
+        Pattern pattern = Pattern.compile("R(\\d)m2");
+        Matcher matcher = pattern.matcher(input);
+
+        // 进行替换
+        StringBuffer result = new StringBuffer();
+        while (matcher.find()) {
+            // 获取数字部分
+            String number = matcher.group(1);
+            // 替换为 "R<number> MARK II"
+            matcher.appendReplacement(result, "R" + number + " Mark II");
+        }
+        matcher.appendTail(result);
+
+        return result.toString();
     }
 
     @Override
@@ -189,6 +210,8 @@ public class MainActivity extends AppCompatActivity {
 
 
             String model = exif.getAttribute(ExifInterface.TAG_MODEL);
+
+            model = replaceMarkII(model);
 
             String lensModel = exif.getAttribute(ExifInterface.TAG_LENS_MODEL);
 
